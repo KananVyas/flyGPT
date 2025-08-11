@@ -7,9 +7,13 @@ from typing import List, Dict, Any, Optional
 
 from fast_flights import create_filter, get_flights_from_filter, FlightData, Passengers
 from src.json_schema import FlightJSON, Result
+from src.logger import get_default_logger
 import uuid
 from datetime import datetime, timedelta
 import calendar
+
+# Setup logger
+logger = get_default_logger(__name__)
 
 def get_dates_for_month(month_year: str):
     date_obj = datetime.strptime(month_year, "%B %Y")
@@ -33,10 +37,10 @@ def process_date(date_params, date):
     trip_type = ''.join(date_params['trip_type']),
     seat = date_params['seat']
     max_stops = date_params['max_stops']
-    print(f"Processing date: {each_date}")
+    logger.info(f"Processing date: {each_date}")
 
     filter = None
-    print(trip_type, each_date)
+    logger.debug(f"Trip type: {trip_type}, Date: {each_date}")
     if trip_type[0] == 'one-way':  
         filter = create_filter(
             flight_data=[
@@ -75,9 +79,13 @@ def process_date(date_params, date):
 
 # Main function using ThreadPoolExecutor for parallel processing
 def search_flights_parallel(user_filters, max_workers=10):
-    # Get all dates for the month
+    logger.info(f"Starting parallel flight search with {max_workers} workers")
+    logger.info(f"Search parameters: {user_filters}")
     
+    # Get all dates for the month
     date_list = user_filters['date_list']
+    logger.info(f"Processing {len(date_list)} dates: {date_list}")
+    
     all_date_flight_info = []
     all_added_flight_ids = []
     specific_flight_provider = []
@@ -90,6 +98,7 @@ def search_flights_parallel(user_filters, max_workers=10):
     
     # Use ThreadPoolExecutor to manage threads
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        logger.info(f"Submitting {len(date_list)} tasks to thread pool")
         # Submit all tasks and get future objects
         future_to_date = {executor.submit(process_date, user_filters, date): date for date in date_list}
         
@@ -100,7 +109,8 @@ def search_flights_parallel(user_filters, max_workers=10):
                 date = result["date"]
                 flight_info = result["flight_info"]
                 price_status = result["price"]
-                # print(result)
+                logger.debug(f"Processing result for date: {date}")
+                
                 # Thread-safe operations for shared resources
                 with results_lock:
                     for each_flight in flight_info['flights']:
@@ -112,27 +122,28 @@ def search_flights_parallel(user_filters, max_workers=10):
                         else: 
                             specific_flight_provider = user_filters['specific_flight_provider']
 
-                        # print(specific_flight_provider)
-                        if (each_flight['is_best'] == True 
-                            and each_flight['name'].lower() in specific_flight_provider 
+                        logger.debug(f"Flight provider: {specific_flight_provider}")
+                        if (each_flight['is_best'] == True  
+                            and each_flight['name'].lower() in specific_flight_provider  #
                             and each_flight['stops'] <= user_filters['max_stops'] 
                             and each_flight['id'] not in all_added_flight_ids):
                                 all_date_flight_info.append(each_flight)
                                 all_added_flight_ids.append(each_flight['id'])
-                                print(each_flight, 'added bestestt', each_flight['id'])
+                                logger.info(f"Added best flight: {each_flight['id']} for date {date}")
                         # if each_flight['name'].lower() in user_filters['specific_flight_provider'] and each_flight['id'] not in all_added_flight_ids:
                         #     all_date_flight_info.append(each_flight)
                         #     all_added_flight_ids.append(each_flight['id'])
-                        #     print(each_flight, 'added specific', each_flight['id']) 
+                        #     logger.info(f"Added specific flight: {each_flight['id']}")
                         # Add condition only if we're looking out for non-best with other filters
 
                 
             except Exception as exc:
-                print(f"Date {future_to_date[future]} generated an exception: {exc}")
+                logger.error(f"Date {future_to_date[future]} generated an exception ")
     
     # Sort results by date for consistency
     all_date_flight_info.sort(key=lambda x: x["date"])
-    print(len(all_added_flight_ids))
+    logger.info(f"Total flights found: {len(all_added_flight_ids)}")
+    logger.info(f"Best flights found: {len(all_date_flight_info)}")
     
     return {
         "flight_info": all_date_flight_info,
@@ -141,11 +152,13 @@ def search_flights_parallel(user_filters, max_workers=10):
 
 # Example usage
 if __name__ == "__main__":
+    logger.info("Starting core.py main execution")
     start_time = time.time()
     
     month_to_search = "May 2025"
     date_list = get_dates_for_month(month_to_search)
-    print(f"Found {len(date_list)} dates to process: {date_list}")
+    logger.info(f"Found {len(date_list)} dates to process: {date_list}")
+    
     user_filters = {
         "from_airport": "BDQ",
         "to_airport": "BLR",
@@ -161,15 +174,29 @@ if __name__ == "__main__":
         "max_stops": 1,
         "price_type": 'minimum'
     }
-    results = search_flights_parallel(user_filters)
+    logger.info(f"User filters configured: {user_filters}")
     
-    print(f"\nResults summary:")
-
-    print(f"Total flights found: {len(results['flight_info'])}")
-    
-    # Print the cheapest flight
-    print(results)
-    end_time = time.time()
-    with open("flights.json", 'w') as fp:
-        json.dump(results, fp)
-    print(f"\nTotal execution time: {end_time - start_time:.2f} seconds")
+    try:
+        results = search_flights_parallel(user_filters)
+        logger.info("Flight search completed successfully")
+        
+        logger.info("Results summary:")
+        logger.info(f"Total flights found: {len(results['flight_info'])}")
+        
+        # Log the results
+        logger.info(f"Results: {results}")
+        
+        end_time = time.time()
+        execution_time = end_time - start_time
+        
+        # Save results to file
+        with open("flights.json", 'w') as fp:
+            json.dump(results, fp)
+        logger.info(f"Results saved to flights.json")
+        
+        logger.info(f"Total execution time: {execution_time:.2f} seconds")
+        logger.info("Core.py main execution completed successfully")
+        
+    except Exception as e:
+        logger.error(f"Error during main execution: {e}")
+        raise
