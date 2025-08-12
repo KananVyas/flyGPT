@@ -57,7 +57,7 @@ def process_date(date_params, date):
             max_stops=max_stops,
         )
     
-    result_data = get_flights_from_filter(filter, mode="common")
+    result_data = get_flights_from_filter(filter, mode="common", currency="inr")
     
     flights = [
         FlightJSON(
