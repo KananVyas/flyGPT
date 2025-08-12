@@ -2,14 +2,13 @@ import logging
 import os
 from datetime import datetime
 
-def setup_logger(name, log_level=logging.INFO, log_file=None, console_output=True):
+def setup_logger(name, log_level=logging.INFO, console_output=True):
     """
     Setup a logger with customizable configuration
     
     Args:
         name (str): Name of the logger (usually __name__)
         log_level: Logging level (default: logging.INFO)
-        log_file (str): Path to log file (default: None - no file logging)
         console_output (bool): Whether to output to console (default: True)
     
     Returns:
@@ -37,39 +36,26 @@ def setup_logger(name, log_level=logging.INFO, log_file=None, console_output=Tru
         console_handler.setFormatter(formatter)
         logger.addHandler(console_handler)
     
-    # Add file handler if log_file is specified
-    if log_file:
-        # Create logs directory if it doesn't exist
-        log_dir = os.path.dirname(log_file)
-        if log_dir and not os.path.exists(log_dir):
-            os.makedirs(log_dir)
-        
-        file_handler = logging.FileHandler(log_file)
-        file_handler.setLevel(log_level)
-        file_handler.setFormatter(formatter)
-        logger.addHandler(file_handler)
-    
     return logger
 
-def get_logger(name, log_level=logging.INFO, log_file=None, console_output=True):
+def get_logger(name, log_level=logging.INFO, console_output=True):
     """
     Get a configured logger instance
     
     Args:
         name (str): Name of the logger (usually __name__)
         log_level: Logging level (default: logging.INFO)
-        log_file (str): Path to log file (default: None - no file logging)
         console_output (bool): Whether to output to console (default: True)
     
     Returns:
         logging.Logger: Configured logger instance
     """
-    return setup_logger(name, log_level, log_file, console_output)
+    return setup_logger(name, log_level, console_output)
 
 # Default logger configuration
 def get_default_logger(name):
     """
-    Get a logger with default configuration (INFO level, console output, agno_agent.log file)
+    Get a logger with default configuration (INFO level, console output only)
     
     Args:
         name (str): Name of the logger (usually __name__)
@@ -80,7 +66,6 @@ def get_default_logger(name):
     return get_logger(
         name=name,
         log_level=logging.INFO,
-        log_file='agno_agent.log',
         console_output=True
     )
 

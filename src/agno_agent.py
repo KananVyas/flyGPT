@@ -123,11 +123,11 @@ if __name__ == "__main__":
     logger.info("Starting main execution of agno_agent")
     
     try:
-        with open('flights.json', 'r') as fp:
-            data = json.load(fp)
-        logger.info("Successfully loaded flights.json data")
-        data_str = json.dumps(data)
-        logger.info(f"Current date string: {current_date_str}")
+        # with open('flights.json', 'r') as fp:
+        #     data = json.load(fp)
+        # logger.info("Successfully loaded flights.json data")
+        # data_str = json.dumps(data)
+        # logger.info(f"Current date string: {current_date_str}")
 
         logger.info("Creating and running user_query_extractor_agent")
         query_extractor_agent = user_query_extractor_agent()
@@ -143,12 +143,6 @@ if __name__ == "__main__":
         
         logger.info("Main execution completed successfully")
         
-    except FileNotFoundError:
-        logger.error("flights.json file not found")
-        print("Error: flights.json file not found")
-    except json.JSONDecodeError as e:
-        logger.error(f"Error parsing flights.json: {e}")
-        print(f"Error parsing flights.json: {e}")
     except Exception as e:
         logger.error(f"Unexpected error during execution: {e}")
         print(f"Unexpected error: {e}")

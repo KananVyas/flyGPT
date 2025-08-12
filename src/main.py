@@ -12,8 +12,6 @@ os.environ['REQUESTS_CA_BUNDLE'] = certifi.where()
 # Setup logger
 logger = get_default_logger(__name__)
 
-user_query = "Hi, Looking for Bangalore to Vadodara for 1 adult on 27th May 2025"
-# user_query = "Hi, Can you search for Bangalore flights?"
 class FlightAgent:
     def __init__(self) -> None:
         self.query_extractor_agent = user_query_extractor_agent()
@@ -24,6 +22,7 @@ class FlightAgent:
     def search_flights(self, user_query):
         logger.info(f"Starting flight search for query: {user_query}")
         
+        #Note:: Added the information checker first, not needed for frontend integration
         # input_supervisor = information_checker_agent()
         # input_response: RunResponse = input_supervisor.run(user_query)
         # logger.debug(f"Input response: {input_response}")
@@ -59,7 +58,6 @@ class FlightAgent:
                 redirect_url = f"https://www.google.com/travel/flights?q=Flights%20to%20{each_results['destination_airport']}%20from%20{each_results['origin_airport']}%20on%20{each_results['Date']}%20one%20way%20economy%20class&curr=INR"
                 each_results['redirect_url'] = redirect_url
                 logger.debug(f"Added redirect URL for flight: {each_results['origin_airport']} to {each_results['destination_airport']}")
-                # redirect_url = # https://www.google.com/travel/flights?q=Flights%20to%20BDQ%20from%20BLR%20on%202025-05-27%20one%20way%20economy%20class&curr=
             
             logger.info("Flight search and analysis completed successfully")
             logger.debug(f"Final flight result: {best_flight_result}")
@@ -76,6 +74,7 @@ class FlightAgent:
 if __name__ == "__main__":
     logger.info("Starting main.py execution")
     flight_agent = FlightAgent()
+    user_query = "Hi, Looking for Bangalore to Vadodara for 1 adult on 27th May 2025"
     
     try:
         best_flight_result = flight_agent.search_flights(user_query)
