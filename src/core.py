@@ -190,9 +190,9 @@ if __name__ == "__main__":
         execution_time = end_time - start_time
         
         # Save results to file
-        with open("flights.json", 'w') as fp:
-            json.dump(results, fp)
-        logger.info(f"Results saved to flights.json")
+        # with open("flights.json", 'w') as fp:
+        #     json.dump(results, fp)
+        # logger.info(f"Results saved to flights.json")
         
         logger.info(f"Total execution time: {execution_time:.2f} seconds")
         logger.info("Core.py main execution completed successfully")

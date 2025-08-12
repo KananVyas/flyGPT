@@ -43,8 +43,8 @@ class FlightAgent:
             logger.debug(f"Flight search results: {all_flights_results}")
 
             all_flights_results_str = json.dumps(all_flights_results)
-            with open('flights.json', 'w') as fp:
-                json.dump(all_flights_results, fp)
+            # with open('flights.json', 'w') as fp:
+            #     json.dump(all_flights_results, fp)
 
             
             best_flight_result: RunResponse = self.flight_list_analyzer_agent.run(all_flights_results_str)

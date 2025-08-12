@@ -35,9 +35,9 @@ The system uses **two specialized AI agents**:
 - **Output**: Top 10 ranked flights with price, duration, and stop analysis
 - **Technology**: Claude 3.5 Sonnet via Agno Framework
 
-## �� Agent Flow Chart
+## 🔄 Agent Flow Chart
 
-![FlyGPT Agent Flow](samples/flowchart.png)
+<img src="samples/flowchart.png" alt="FlyGPT Agent Flow" width="800" height="600" style="max-width: 100%; height: auto; border: 1px solid #e1e5e9; border-radius: 8px;">
 
 *The complete flow from natural language query to ranked flight results*
 
@@ -61,7 +61,8 @@ pip install -r requirements.txt
 ```bash
 # Create .env file
 ANTHROPIC_API_KEY=your_claude_api_key_here
-FLIGHTS_API_URL=http://localhost:8000
+FLIGHTS_API_HOST=0.0.0.0
+FLIGHTS_API_PORT=3001
 ```
 
 ### 3. **Run the API**
@@ -69,7 +70,6 @@ FLIGHTS_API_URL=http://localhost:8000
 python3 api/app.py
 ```
 
-The API will be available at `http://localhost:8000`
 
 ## 🔧 API Usage
 
