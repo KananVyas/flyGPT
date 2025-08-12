@@ -38,7 +38,7 @@ The system uses **two specialized AI agents**:
 ## 🔄 Agent Flow Chart
 
 <div align="center">
-  <img src="samples/flowchart.png" alt="FlyGPT Agent Flow" height="400">
+  <img src="samples/flowchart.png" alt="FlyGPT Agent Flow" height="550">
 </div>
 
 *The complete flow from natural language query to ranked flight results*
