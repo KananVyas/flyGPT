@@ -22,7 +22,7 @@ HOST = os.getenv("HOST", "0.0.0.0")
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
 # Thread pool executor for CPU-bound operations
-executor = ThreadPoolExecutor(max_workers=4)
+executor = ThreadPoolExecutor(max_workers=1)
 
 # FastAPI app configuration
 app = FastAPI(
@@ -106,7 +106,7 @@ if __name__ == "__main__":
     print(f"📚 API Documentation: {BASE_URL}:{PORT}/docs")
     print(f"🔍 Health Check: {BASE_URL}:{PORT}/health")
     print(f"🔧 Debug Mode: {DEBUG}")
-    print(f"🧵 Thread Pool Workers: 4")
+    print(f"🧵 Thread Pool Workers: 1")
     print("-" * 50)
     
     uvicorn.run(
