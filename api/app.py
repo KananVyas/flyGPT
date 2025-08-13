@@ -22,7 +22,7 @@ HOST = os.getenv("HOST", "0.0.0.0")
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
 # Thread pool executor for CPU-bound operations
-executor = ThreadPoolExecutor(max_workers=1)
+executor = ThreadPoolExecutor(max_workers=4)
 
 # FastAPI app configuration
 app = FastAPI(
